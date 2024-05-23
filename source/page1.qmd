@@ -1,0 +1,166 @@
+---
+title: |
+  | Universidade Federal da Paraíba
+  | Centro de Ciências Exatas e da Natureza
+  | Departamento de Estatística
+abstract-title: "Instruções"
+author: "**Prof. Dr. Pedro Rafael D. Marinho**"
+date: today
+date-format: "23/05/2024"
+lang: pt
+language:
+  title-block-author-single: "Professor"
+  title-block-published: "Data da Avaliação"
+format:
+  html:
+    code-link: true
+    toc: true
+    number-sections: false
+    code-copy: true
+    html-math-method: katex
+    self-contained: true
+    code-tools:
+      source: false
+      toggle: false
+      caption: none
+reference-location: margin
+citation-location: margin
+---
+
+::: callout-note
+
+# Resumo
+
+A ideia é mostrar em que situação deveremos considerar a fator de proporcionalidade
+no processo de otimização da função de verossimilhança/log-verossimilhança.
+
+De forma resumida, devemos apenas nos preocuparmos quando esse fator envolve um ou mais parâmetros que indexam o nosso modelo. Caso esse fator envolva quantidades fixas que independam dos parâmetros, não precisaremos nos preocupar com ele.
+:::
+
+# Fator de proporcionalidade da verossimilhança
+
+Sabemos que o ponto $\widehat{\bm{\theta}}$ que otimiza a função de verossmilhança $L(\bm{\theta};x)$ é o mesmo ($\widehat{\bm{\theta}}$) que otimiza a verossmilhança $L^*(\bm{\theta};x)$ proporcional.
+
+Em geral, não devemos nos preocupar com esse fator de proporcionalidade, caso ele seja sempre o mesmo, isto é, não dependa dos parâmetros.
+
+## Dados e parâmeteros verdadeiros
+
+Considere $\alpha$ o parâmetro `shape` da `dweibull()` e $\beta$ o parâmetro `scale` da `dweibull()`, sendo os valores verdadeiros $\alpha = 2.5$ e $\beta = 3.5$. Vamos gerar os dados
+que serão sempre os mesmos nos cenários cosiderados adiante nessa análise.
+
+```{r}
+# Garantindo reprodutibilidade, precisamos fixar a semente
+# do gerador de números pseudo-aleatórios:
+set.seed(0)
+# Considerando 10 mil observações
+dados <- rweibull(10e3, shape = 2.5, scale = 3.5)
+```
+
+## Quando não devemos nos preocupar?
+
+Consideremos o caso da densidade da Weibull (função `dweibull` em R). Vamos tornar essa densidade imprópria, isto é, nesse caso, ela não vai integrar em 1, uma vez que aqui irei dividir essa densidade por uma constante que independe dos parâmetros, por exemplo, 0.5. Charemos essa função de `pdf_weibull_1()`.
+
+```{r}
+pdf_weibull_1 <- function(x, alpha, beta) {
+  dweibull(x, shape = alpha, scale = beta) / 0.5
+}
+
+# Implementando a verossimilhança com base em
+# pdf_weibull_1():
+log_verossimilhanca_1 <- function(x, alpha, beta) {
+  -sum(log(pdf_weibull_1(x, alpha = alpha, beta = beta)))
+}
+
+# Otimizando a função de log-verossimilhança:
+emv_1 <- optim(
+  par = c(1, 1),
+  fn = \(par) log_verossimilhanca_1(x = dados, alpha = par[1L], beta = par[2L]),
+  method = "Nelder-Mead"
+)
+
+# Exibindo o resultado:
+print(emv_1)
+```
+
+Assim, nossas estimativas par $\alpha$ e $beta$, foram respectivamente $\widehat{\alpha}$ = `r emv_1$par[1]` e $\widehat{\beta}$ = `r emv_1$par[2]`, muito próximas aos valores verdadeiros $\alpha = 2.5$ e $\beta = 3.5$.
+
+**Perceba que nossa verossimilhança não considerou o fator de proporcionalidade, uma vez que ele não depende dos parâmetros. Em nenhum momento houve a preocupação com esse fator, pois ele é constante a todo momento, por não envolver $\alpha$ nem $\beta$**.
+
+<br>
+
+![Ok?](hum.gif)
+
+## Quando devo me preocupar com o fator de proporcionalidade?
+
+Bem, como dito anteriormente, devemos nos preocupar com o fator de proporcionalidade quando ele envolve um ou mais parâmetros que indexam o nosso modelo. Vamos considerar a densidade da Weibull (função `dweibull()` e iremos multiplicar ela por, por exemplo, $1 + \frac{\alpha}{\beta}$). Chamaremos essa função de `pdf_weibull_2()`.
+
+### Forma ingênua
+
+Ingenuamente, vamos implementar a verossimilhança com base em `pdf_weibull_2()`, sem nos preocuparmos com o fator de proporcionalidade. Lembre-se, agora, esse fator envolve os parâmetros $\alpha$ e $\beta$ do modelo, mas não iremos nos preocupara ingenuamente com eles.
+
+```{r}
+pdf_weibull_2 <- function(x, alpha, beta) {
+  dweibull(x, shape = alpha, scale = beta) * (alpha/beta)
+}
+
+# Implementando a verossimilhança com base em
+# pdf_weibull_1():
+log_verossimilhanca_2 <- function(x, alpha, beta) {
+  -sum(log(pdf_weibull_2(x, alpha = alpha, beta = beta)))
+}
+
+# Otimizando a função de log-verossimilhança:
+emv_2 <- optim(
+  par = c(1, 1),
+  fn = \(par) log_verossimilhanca_2(x = dados, alpha = par[1L], beta = par[2L]),
+  method = "Nelder-Mead"
+)
+
+# Exibindo o resultado:
+print(emv_2)
+```
+
+Perceba que as estimativas, agora, não foram coerentes, uma vez que não consideramos o fator de proporcionalidade que envolve os parâmetros $\alpha$ e $\beta$. As estimativas $\widehat{\alpha}$ = `r emv_2$par[1]` e $\widehat{\beta}$ = `r emv_2$par[2]` não foram próximas aos valores verdadeiros $\alpha = 2.5$ e $\beta = 3.5$.
+
+<br>
+
+![](prestando_atencao.gif)
+
+## Forma coerente (se preocumando com o fator de proporcionalidade)
+
+Quando o fator de proporcionalidade envolve os parâmetros do modelo, devemos nos preocupar com ele. Note que `pdf_weibuul_3()` é uma densidade imprópria, uma vez que ela não integra em 1, de modo que ela é multiplicada por $\frac{\alpha}{\beta}$. Vamos implementar a verossimilhança com base nessa densidade, mas, agora, consideraremos o fator de proporcionalidade na implementação da verossmilhança, ou seja, iremos multiplicar `pdf_weibull_3()` por $\frac{\beta}{\alpha}$, na verossimilhança!
+
+```{r}
+pdf_weibull_3 <- function(x, alpha, beta) {
+  dweibull(x, shape = alpha, scale = beta) * (alpha/beta)
+}
+
+# Implementando a verossimilhança com base em
+# pdf_weibull_3():
+log_verossimilhanca_3 <- function(x, alpha, beta) {
+  fator_normalizacao <- beta/alpha
+  -sum(log(pdf_weibull_3(x, alpha = alpha, beta = beta) * fator_normalizacao))
+}
+
+# Otimizando a função de log-verossimilhança:
+emv_3 <- optim(
+  par = c(1, 1),
+  fn = \(par) log_verossimilhanca_3(x = dados, alpha = par[1L], beta = par[2L]),
+  method = "Nelder-Mead"
+)
+
+# Exibindo o resultado:
+print(emv_3)
+```
+
+Agora sim, temos estimativas coerente para uma verossimilhança proporcional que envolve os parâmetros do nosso modelo! As estimativas $\widehat{\alpha}$ = `r emv_3$par[1]` e $\widehat{\beta}$ = `r emv_3$par[2]` foram muito próximas aos valores verdadeiros $\alpha = 2.5$ e $\beta = 3.5$.
+
+<br>
+
+![](uau.gif)
+
+Entendido esse ponto? Quando o fator de proporcionalidade envolve os parâmetros do modelo, devemos nos preocupar com ele. Caso contrário, podemos ignorá-lo, uma vez que ele é constante e não depende dos parâmetros do modelo.
+
+<br>
+
+![](yes.gif)

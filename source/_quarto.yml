@@ -1,0 +1,14 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Compartilhando"
+  navbar:
+    left:
+      - text: Início
+        href: index.html
+      - text: "Conteúdos"
+        menu:
+          - text: "Fator de proporcionalidade da verossimilhança"
+            href: page1.html
