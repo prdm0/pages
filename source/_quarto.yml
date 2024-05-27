@@ -12,3 +12,5 @@ website:
         menu:
           - text: "Fator de proporcionalidade da verossimilhança"
             href: page1.html
+          - text: "Serie de Taylor"
+            href: page2.html
