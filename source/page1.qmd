@@ -92,7 +92,7 @@ Assim, nossas estimativas par $\alpha$ e $beta$, foram respectivamente $\widehat
 
 ## Quando devo me preocupar com o fator de proporcionalidade?
 
-Bem, como dito anteriormente, devemos nos preocupar com o fator de proporcionalidade quando ele envolve um ou mais parâmetros que indexam o nosso modelo. Vamos considerar a densidade da Weibull (função `dweibull()` e iremos multiplicar ela por, por exemplo, $1 + \frac{\alpha}{\beta}$). Chamaremos essa função de `pdf_weibull_2()`.
+Bem, como dito anteriormente, devemos nos preocupar com o fator de proporcionalidade quando ele envolve um ou mais parâmetros que indexam o nosso modelo. Vamos considerar a densidade da Weibull (função `dweibull()` e iremos multiplicar ela por, por exemplo, $\frac{\alpha}{\beta}$). Chamaremos essa função de `pdf_weibull_2()`.
 
 ### Forma ingênua
 
