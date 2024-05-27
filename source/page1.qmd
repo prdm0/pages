@@ -100,7 +100,7 @@ Ingenuamente, vamos implementar a verossimilhança com base em `pdf_weibull_2()`
 
 ```{r}
 pdf_weibull_2 <- function(x, alpha, beta) {
-  dweibull(x, shape = alpha, scale = beta) * (alpha/beta)
+  dweibull(x, shape = alpha, scale = beta) * (alpha / beta)
 }
 
 # Implementando a verossimilhança com base em
@@ -132,13 +132,13 @@ Quando o fator de proporcionalidade envolve os parâmetros do modelo, devemos no
 
 ```{r}
 pdf_weibull_3 <- function(x, alpha, beta) {
-  dweibull(x, shape = alpha, scale = beta) * (alpha/beta)
+  dweibull(x, shape = alpha, scale = beta) * (alpha / beta)
 }
 
 # Implementando a verossimilhança com base em
 # pdf_weibull_3():
 log_verossimilhanca_3 <- function(x, alpha, beta) {
-  fator_normalizacao <- beta/alpha
+  fator_normalizacao <- beta / alpha
   -sum(log(pdf_weibull_3(x, alpha = alpha, beta = beta) * fator_normalizacao))
 }
 
