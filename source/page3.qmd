@@ -1,0 +1,33 @@
+---
+title: "Comparação de Métodos de Validação Cruzada"
+output: html_document
+---
+  
+```{r}
+#| echo: false
+library(knitr)
+# Criar a tabela em R
+tabela <- data.frame(
+  Característica = c("Divisão dos Dados", "Uso dos Dados", "Número de Iterações", "Flexibilidade", 
+                     "Viés da Estimativa", "Variância da Estimativa", "Custo Computacional", 
+                     "Tendência ao Overfitting", "Estimativa de Desempenho", "Implementação", "Exemplos de Uso"),
+  MCCV = c("Divisões aleatórias repetidas", "Subconjuntos aleatórios de treinamento e validação", 
+           "Definido pelo usuário (e.g., 100)", "Alta (proporção de treinamento e validação ajustável)", 
+           "Médio", "Média (reduzida com mais repetições)", "Moderado a alto (dependendo das repetições)", 
+           "Menor", "Boa com suficientes repetições", "Simples a moderada", "Avaliação robusta de desempenho"),
+  LOOCV = c("Cada observação uma vez como validação", "Todas as observações utilizadas em cada iteração", 
+            "Igual ao número de observações", "Baixa", 
+            "Baixo", "Alta", "Muito alto para grandes conjuntos de dados", 
+            "Maior", "Pode ser instável devido à alta variância", "Simples", "Conjuntos de dados pequenos"),
+  kFoldsCV = c("Dividido em k partes", "Cada observação usada uma vez para validação", 
+               "Definido pelo valor de k (e.g., 5 ou 10)", "Moderada", 
+               "Moderado", "Média", "Moderado", 
+               "Moderada", "Boa com valor de k apropriado", "Simples", "Uso geral em aprendizado de máquina"),
+  NestedCV = c("Duas camadas de k-folds CV", "Todas as observações usadas em cada iteração do outer loop", 
+               "Outer loop: k iterações; Inner loop: k iterações para cada outer fold", "Alta (ajuste de hiperparâmetros no inner loop)", 
+               "Baixo", "Baixa (estimação robusta)", "Muito alto (duas camadas de k-folds CV)", 
+               "Menor (avaliação imparcial de hiperparâmetros)", "Excelente (evita viés de otimização)", "Complexa", "Seleção de hiperparâmetros e avaliação de modelos")
+)
+
+kable(tabela, format = "markdown", caption = "Comparação de Métodos de Validação Cruzada")
+```

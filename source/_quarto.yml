@@ -14,3 +14,5 @@ website:
             href: page1.html
           - text: "Serie de Taylor"
             href: page2.html
+          - text: "Tabela resumo (Cross-Validation)"
+            href: page3.html
